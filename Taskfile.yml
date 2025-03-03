@@ -1,0 +1,45 @@
+# https://taskfile.dev
+
+version: '3'
+  
+dotenv:
+  - ".env"
+
+vars:
+  CMD_DIR: "./cmd"
+  BIN_DIR: "./bin"
+
+tasks:
+  default:
+    cmds:
+      - for: [events, my-events]
+        task: go-build
+        vars:
+          NAME: '{{.ITEM}}'
+
+  go-build:
+    internal: true
+    cmds:
+      - go build -o {{.BIN_DIR}}/{{.NAME}} {{.CMD_DIR}}/{{.NAME}}
+
+  build:
+    cmds:
+      - task: go-build
+        vars: { NAME: '{{.CLI_ARGS}}' }
+
+  go-run:
+    internal: true
+    cmds:
+      - go run {{.CMD_DIR}}/{{.NAME}}
+
+  run:
+    cmds:
+      - task: go-run
+        vars: { NAME: '{{.CLI_ARGS}}' }
+
+  resources:
+    desc: curl 42 api and generate structs
+    dir: ./tools
+    cmds:
+      - curl https://api.intra.42.fr/apidoc | jq -f ./get-response_data.jq > ../resources.json
+      - gojson -input ../resources.json -o new_structs.go -pkg goft -subStruct -name _

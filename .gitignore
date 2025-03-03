@@ -1,0 +1,4 @@
+.env
+bin
+apidoc.json
+resources.json
