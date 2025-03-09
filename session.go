@@ -1,3 +1,7 @@
+// goft - go bindings for 42 school API
+//
+// Copyright 2025 by Souria-Saky Hocquenghem - All Rights Reserved
+// You may use, distribute and modify this code under the terms of the MIT license
 package goft
 
 import (
@@ -87,7 +91,6 @@ func FetchWithTotal(total int) FetchOptionFunc {
 
 // Fetch do as Get. It return the last http.Response
 func (s *Session) Fetch(uri string, v any, opts ...FetchOptionFunc) (*http.Response, error) {
-	const perPage = 30
 	o := fetchOptions{
 		total: -1,
 	}
