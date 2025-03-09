@@ -1,7 +1,14 @@
-// goft - go bindings for 42 school API
+// Package goft provides Go bindings for the 42 school API.
 //
-// Copyright 2025 by Souria-Saky Hocquenghem - All Rights Reserved
-// You may use, distribute and modify this code under the terms of the MIT license
+// This package facilitates interaction with the 42 school API by providing
+// a session-based approach to manage HTTP requests, including rate limiting
+// and automatic handling of paginated responses.
+
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+// Copyright (c) 2025 Souria-Saky HOCQUENGHEM
 package goft
 
 import (
@@ -16,21 +23,26 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// Session represents a session for interacting with the 42 school API.
+// It manages rate limiting and provides methods to perform HTTP requests.
 type Session struct {
 	client              *http.Client
 	secondlyRateLimiter *rate.Limiter
 	hourlyRateLimiter   *rate.Limiter
 }
 
+// New creates a new Session with the provided HTTP client.
+// It initializes rate limiters to control the frequency of API requests.
 func New(client *http.Client) *Session {
 	return &Session{
 		client:              client,
 		secondlyRateLimiter: rate.NewLimiter(rate.Every(time.Second), 2),
 		hourlyRateLimiter:   rate.NewLimiter(rate.Every(time.Hour), 1200),
 	}
-
 }
 
+// waitRateLimits waits for the rate limiters to allow a request to proceed.
+// It ensures that the API rate limits are respected.
 func (s *Session) waitRateLimits(ctx context.Context) error {
 	if err := s.secondlyRateLimiter.Wait(ctx); err != nil {
 		return err
@@ -38,11 +50,11 @@ func (s *Session) waitRateLimits(ctx context.Context) error {
 	if err := s.hourlyRateLimiter.Wait(ctx); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-// Do is only doing an http client.Do. It wait the rate limit and handle the Authorization
+// Do performs an HTTP request using the session's client.
+// It waits for the rate limiters and handles the Authorization header.
 func (s *Session) Do(req *http.Request) (*http.Response, error) {
 	if err := s.waitRateLimits(req.Context()); err != nil {
 		return nil, err
@@ -50,9 +62,11 @@ func (s *Session) Do(req *http.Request) (*http.Response, error) {
 	return s.client.Do(req)
 }
 
-// Get do the same as Session.Do(), but decode the json body to v and prepend the api base url
+// Get performs a GET request to the specified URI and decodes the JSON response into v.
+// It prepends the API base URL to the URI and waits for the rate limiters.
 //
-//	e.g:
+// Example usage:
+//
 //	var events []model.Event
 //	Session.Get("/events", &events)
 func (s *Session) Get(uri string, v any) (*http.Response, error) {
@@ -77,19 +91,28 @@ func (s *Session) Get(uri string, v any) (*http.Response, error) {
 	return resp, nil
 }
 
+// fetchOptions holds options for the Fetch method.
 type fetchOptions struct {
 	total int
 }
 
+// FetchOptionFunc is a function that configures fetchOptions.
 type FetchOptionFunc func(o *fetchOptions)
 
+// FetchWithTotal sets the total number of items to fetch.
 func FetchWithTotal(total int) FetchOptionFunc {
 	return func(o *fetchOptions) {
 		o.total = total
 	}
 }
 
-// Fetch do as Get. It return the last http.Response
+// Fetch performs a GET request to the specified URI and decodes the JSON response into v.
+// It handles paginated responses and accumulates the results.
+//
+// Example usage:
+//
+//	var events []model.Event
+//	Session.Fetch("/events", &events, FetchWithTotal(100))
 func (s *Session) Fetch(uri string, v any, opts ...FetchOptionFunc) (*http.Response, error) {
 	o := fetchOptions{
 		total: -1,
