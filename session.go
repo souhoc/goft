@@ -74,21 +74,21 @@ func (s *Session) Get(uri string, v any) (*http.Response, error) {
 		return nil, err
 	}
 
-	resp, err := s.client.Get(BaseUrlVersioned + uri)
+	res, err := s.client.Get(BaseUrlVersioned + uri)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("failed to get %s: %s", uri, resp.Status)
+	if res.StatusCode != http.StatusOK {
+		return res, fmt.Errorf("failed to get %s: %s", uri, res.Status)
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
+	if err := json.NewDecoder(res.Body).Decode(v); err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	return res, nil
 }
 
 // fetchOptions holds options for the Fetch method.
