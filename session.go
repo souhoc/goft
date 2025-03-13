@@ -81,7 +81,7 @@ func (s *Session) Get(uri string, v any) (*http.Response, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get %s: %s", uri, resp.Status)
+		return resp, fmt.Errorf("failed to get %s: %s", uri, resp.Status)
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(v); err != nil {
