@@ -408,22 +408,29 @@ type Event struct {
 }
 
 type ScaleTeam struct {
-	BeginAt        time.Time `json:"begin_at"`
-	Comment        any       `json:"comment"`
-	Correcteds     string    `json:"correcteds"`
-	Corrector      string    `json:"corrector"`
-	CreatedAt      time.Time `json:"created_at"`
-	Feedback       any       `json:"feedback"`
-	FeedbackRating any       `json:"feedback_rating"`
-	Feedbacks      []any     `json:"feedbacks"`
-	FilledAt       time.Time `json:"filled_at"`
-	FinalMark      any       `json:"final_mark"`
-	Flag           Flag      `json:"flag"`
-	ID             uint      `json:"id"`
-	Scale          Scale     `json:"scale"`
-	ScaleID        uint      `json:"scale_id"`
-	Truant         any       `json:"truant"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	BeginAt        time.Time       `json:"begin_at"`
+	Comment        any             `json:"comment"`
+	Correcteds     []ScaleTeamUser `json:"correcteds"`
+	Corrector      ScaleTeamUser   `json:"corrector"`
+	CreatedAt      time.Time       `json:"created_at"`
+	Feedback       any             `json:"feedback"`
+	FeedbackRating any             `json:"feedback_rating"`
+	Feedbacks      []any           `json:"feedbacks"`
+	FilledAt       time.Time       `json:"filled_at"`
+	FinalMark      int             `json:"final_mark"`
+	Flag           Flag            `json:"flag"`
+	ID             uint            `json:"id"`
+	Team           Team            `json:"team"`
+	Scale          Scale           `json:"scale"`
+	ScaleID        uint            `json:"scale_id"`
+	Truant         any             `json:"truant"`
+	UpdatedAt      time.Time       `json:"updated_at"`
+}
+
+type ScaleTeamUser struct {
+	ID    int    `json:"id"`
+	Login string `json:"login"`
+	URL   string `json:"url"`
 }
 
 type Resources_sub105 struct {
@@ -581,21 +588,21 @@ type Team struct {
 	Closed           bool      `json:"closed?"`
 	ClosedAt         time.Time `json:"closed_at"`
 	CreatedAt        time.Time `json:"created_at"`
-	FinalMark        any       `json:"final_mark"`
+	FinalMark        int       `json:"final_mark"`
 	ID               uint      `json:"id"`
 	Locked           bool      `json:"locked?"`
 	LockedAt         time.Time `json:"locked_at"`
 	Name             string    `json:"name"`
 	ProjectID        uint      `json:"project_id"`
 	ProjectSessionID uint      `json:"project_session_id"`
-	RepoURL          any       `json:"repo_url"`
+	RepoURL          string    `json:"repo_url"`
 	RepoUUID         string    `json:"repo_uuid"`
 	Status           string    `json:"status"`
 	TerminatingAt    time.Time `json:"terminating_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
 	URL              string    `json:"url"`
 	Users            []User    `json:"users"`
-	Validated        any       `json:"validated?"`
+	Validated        bool      `json:"validated?"`
 }
 
 type Close struct {
