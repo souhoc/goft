@@ -1,7 +1,6 @@
 package goft
 
 import (
-	"slices"
 	"strings"
 	"time"
 )
