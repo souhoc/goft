@@ -3,6 +3,7 @@ package goft
 import (
 	"slices"
 	"strings"
+	"time"
 )
 
 type Link struct {
@@ -38,14 +39,11 @@ func ParseLink(rawLink string) Link {
 	return l
 }
 
-func HasStudAchievement(achievements []Achievement) bool {
-	return slices.ContainsFunc(achievements, func(e Achievement) bool {
-		return (e.ID == 1 || e.ID == 218)
-	})
-}
-
-func HasMemberCursus(cursusStudents []CursusUser) bool {
-	return slices.ContainsFunc(cursusStudents, func(e CursusUser) bool {
-		return strings.ToLower(e.Grade) == "member"
-	})
+func IsPisciner(cursus []CursusUser) bool {
+	for _, c := range cursus {
+		if c.Grade == "Pisciner" {
+			return c.EndAt == time.Time{}
+		}
+	}
+	return true
 }
